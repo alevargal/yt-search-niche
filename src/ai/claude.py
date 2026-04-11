@@ -1,4 +1,5 @@
 import json
+import re
 import anthropic
 from src.config import settings
 from src.models import VideoData, ChannelData, TrendsData, NicheStats, NicheAnalysis, RssData
@@ -121,6 +122,8 @@ Return ONLY valid JSON:
 
 
 def _parse(text: str, niche: dict) -> NicheAnalysis:
+    text = re.sub(r'```json\s*', '', text)
+    text = re.sub(r'```\s*', '', text)
     start = text.find("{")
     end = text.rfind("}") + 1
     if start == -1 or end == 0:

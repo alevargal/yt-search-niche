@@ -27,9 +27,8 @@ def get_trends(keyword: str, region: str = "US") -> TrendsData:
     geo = "" if region in ("global", "") else region
 
     interest_90d, timeline = _get_interest_with_timeline(pytrends, keyword, geo, "today 3-m")
-    time.sleep(2)
+    time.sleep(4)
     interest_30d = _calc_last_month_interest(timeline)
-    time.sleep(2)
     rising, _ = _get_related_queries(pytrends, keyword, geo)
 
     growth_30d = _calc_growth(timeline, points=4)

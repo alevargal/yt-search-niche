@@ -51,7 +51,7 @@ def main():
 
         # Phase 3: Deep dive per niche (parallel)
         progress.update(task, description=f"🔍 Глубокий анализ {len(niches)} ниш параллельно...")
-        niche_reports = _analyze_niches_parallel(niches, region, progress, task)
+        niche_reports = _analyze_niches(niches, region, progress, task)
 
         progress.update(task, description=f"✅ Анализ завершён — {len(niche_reports)} ниш проанализировано")
 
@@ -74,7 +74,7 @@ def main():
     print_report(report)
 
 
-def _analyze_niches_parallel(niches, region, progress, task) -> list:
+def _analyze_niches(niches, region, progress, task) -> list:
     from src.youtube.trending import get_videos_by_keyword
     from src.youtube.stats import get_channel_details, enrich_channels_with_best_video, compute_niche_stats
     from src.trends.google import get_trends
@@ -114,7 +114,7 @@ def _analyze_niches_parallel(niches, region, progress, task) -> list:
         trends = None
         try:
             import time
-            time.sleep(3)
+            time.sleep(5)
             trends = get_trends(keyword, region)
         except Exception:
             pass
