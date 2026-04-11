@@ -85,8 +85,20 @@ def _analyze_niches_parallel(niches, region, progress, task) -> list:
     def process_niche(niche: dict):
         keyword = niche["search_keyword"]
 
-        # YouTube search
+        # YouTube search with fallback
         videos = get_videos_by_keyword(keyword, region=region, max_results=30)
+        if not videos:
+            fallback = niche.get("search_keyword_fallback", "")
+            if fallback:
+                videos = get_videos_by_keyword(fallback, region=region, max_results=30)
+                if videos:
+                    keyword = fallback
+        if not videos:
+            # Last resort: use niche_name words
+            short_kw = " ".join(niche["niche_name"].split()[:3])
+            videos = get_videos_by_keyword(short_kw, region=region, max_results=30)
+            if videos:
+                keyword = short_kw
         if not videos:
             return None
 
@@ -102,7 +114,7 @@ def _analyze_niches_parallel(niches, region, progress, task) -> list:
         trends = None
         try:
             import time
-            time.sleep(1)
+            time.sleep(3)
             trends = get_trends(keyword, region)
         except Exception:
             pass

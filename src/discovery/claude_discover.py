@@ -1,6 +1,7 @@
 import json
 import anthropic
 from src.config import settings
+
 from src.models import RawTrendingData
 
 
@@ -13,7 +14,7 @@ def discover_niches(raw: RawTrendingData, top_n: int = 10) -> list[dict]:
     prompt = _build_prompt(raw, top_n)
 
     message = client.messages.create(
-        model="claude-sonnet-4-6",
+        model=settings.discovery_model,
         max_tokens=2000,
         messages=[{"role": "user", "content": prompt}],
     )
@@ -63,12 +64,19 @@ Return ONLY valid JSON array:
 [
   {{
     "niche_name": "Human-readable niche name (e.g. 'AI Productivity Tools')",
-    "search_keyword": "Best YouTube search keyword for this niche (e.g. 'AI tools for productivity')",
+    "search_keyword": "Short 2-4 word YouTube search keyword with GUARANTEED results (e.g. 'AI productivity tools'). Must be a common search term people actually type.",
+    "search_keyword_fallback": "Even shorter 1-2 word fallback keyword if main fails (e.g. 'AI tools')",
     "why_trending_now": "One sentence: why this niche is hot right now based on the data",
     "category": "Tech|Finance|Gaming|Fitness|Education|Entertainment|Lifestyle|Business|Science|Other"
   }},
   ...
 ]
+
+IMPORTANT for search_keyword:
+- Use SHORT, COMMON search terms (2-4 words max)
+- Avoid overly specific phrases — broad enough to return 30+ videos
+- Examples of GOOD keywords: "minecraft survival", "roblox gameplay", "AI tools 2026", "stock market investing"
+- Examples of BAD keywords: "Pokemon Champions competitive strategy guide for beginners"
 
 Return exactly {top_n} niches, ranked from hottest to least hot. No extra text, only JSON."""
 

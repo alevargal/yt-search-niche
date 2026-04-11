@@ -180,9 +180,35 @@ def _print_niche_block(rank: int, nr: NicheReport) -> None:
     )
     console.print(Panel(comp_mon, title="[bold]⚔️  КОНКУРЕНЦИЯ & 💰 МОНЕТИЗАЦИЯ[/bold]", border_style="red"))
 
+    # Viral patterns + audience
+    if a.viral_patterns or a.audience_profile:
+        vp_body = ""
+        if a.viral_patterns:
+            vp_body += f"[bold]Что делает видео вирусным:[/bold]\n  {a.viral_patterns}\n\n"
+        if a.audience_profile:
+            vp_body += f"[bold]Аудитория:[/bold]\n  {a.audience_profile}"
+        console.print(Panel(vp_body.strip(), title="[bold]🔥 ВИРУСНЫЕ ПАТТЕРНЫ & АУДИТОРИЯ[/bold]", border_style="red3"))
+
+    # Top channel analysis
+    if a.top_channel_analysis:
+        console.print(Panel(f"  {a.top_channel_analysis}", title="[bold]🔬 АНАЛИЗ ТОПОВЫХ КОНКУРЕНТОВ[/bold]", border_style="magenta"))
+
     # Content angles
     angles = "\n".join(f"  [cyan]→[/cyan] {angle}" for angle in a.content_angles)
     console.print(Panel(angles, title="[bold]🎯 НЕЗАКРЫТЫЕ УГЛЫ[/bold]", border_style="cyan"))
+
+    # Channel concept
+    if a.channel_concept:
+        console.print(Panel(f"  {a.channel_concept}", title="[bold]💡 КОНЦЕПЦИЯ КАНАЛА — ЧТО ИМЕННО СОЗДАВАТЬ[/bold]", border_style="bold green"))
+
+    # First 10 videos
+    if a.first_10_videos:
+        videos_list = "\n".join(f"  [green]#{i+1}[/green] {t}" for i, t in enumerate(a.first_10_videos))
+        console.print(Panel(videos_list, title="[bold]🎬 ПЕРВЫЕ ВИДЕО — КОНКРЕТНЫЕ НАЗВАНИЯ[/bold]", border_style="green"))
+
+    # Monetization
+    if a.monetization_breakdown:
+        console.print(Panel(f"  {a.monetization_breakdown}", title="[bold]💰 КАК МОНЕТИЗИРОВАТЬ[/bold]", border_style="gold3"))
 
     # Final recommendation
     worth = "[bold green]✅ ДА — стоит входить[/bold green]" if a.worth_entering else "[bold red]⚠️  С ОГОВОРКАМИ[/bold red]"

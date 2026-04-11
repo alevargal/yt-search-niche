@@ -144,8 +144,14 @@ class NicheAnalysis(BaseModel):
     estimated_cpm_max: float
     sponsor_potential: str
     barrier_to_entry: str
+    viral_patterns: str = ""
+    audience_profile: str = ""
+    top_channel_analysis: str = ""
     content_angles: list[str]
+    channel_concept: str = ""
+    first_10_videos: list[str] = []
     why_trending_now: str
+    monetization_breakdown: str = ""
     strategy: str
     recommendation: str
     worth_entering: bool
