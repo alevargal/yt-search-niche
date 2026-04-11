@@ -161,13 +161,16 @@ def _print_niche_block(rank: int, nr: NicheReport) -> None:
     # Trends
     if nr.trends:
         t = nr.trends
-        trend_body = (
-            f"  Интерес 30д: [bold]{t.interest_30d}/100[/bold] {_arrow(t.growth_30d_pct)} {t.growth_30d_pct:+.1f}%  |  "
-            f"Интерес 90д: [bold]{t.interest_90d}/100[/bold] {_arrow(t.growth_90d_pct)} {t.growth_90d_pct:+.1f}%\n"
-        )
-        if t.rising_queries:
-            trend_body += "\n  Растущие запросы:\n"
-            trend_body += "\n".join(f"  [cyan]↑[/cyan] {q.query} — [green]{q.value}[/green]" for q in t.rising_queries)
+        if t.interest_90d == 0 and t.interest_30d == 0:
+            trend_body = "  [dim]Данные недоступны (Google Trends не вернул результат)[/dim]"
+        else:
+            trend_body = (
+                f"  Интерес 30д: [bold]{t.interest_30d}/100[/bold] {_arrow(t.growth_30d_pct)} {t.growth_30d_pct:+.1f}%  |  "
+                f"Интерес 90д: [bold]{t.interest_90d}/100[/bold] {_arrow(t.growth_90d_pct)} {t.growth_90d_pct:+.1f}%\n"
+            )
+            if t.rising_queries:
+                trend_body += "\n  Растущие запросы:\n"
+                trend_body += "\n".join(f"  [cyan]↑[/cyan] {q.query} — [green]{q.value}[/green]" for q in t.rising_queries)
         console.print(Panel(trend_body, title="[bold]📈 GOOGLE TRENDS[/bold]", border_style="green"))
 
     # Competition + monetization

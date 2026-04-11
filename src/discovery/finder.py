@@ -59,9 +59,3 @@ def _get_hn_front_page():
     return data.posts
 
 
-def _empty(name: str):
-    if name == "youtube":
-        return []
-    if name == "google":
-        return []
-    return []

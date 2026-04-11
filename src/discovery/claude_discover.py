@@ -1,4 +1,5 @@
 import json
+import re
 import anthropic
 from src.config import settings
 
@@ -82,6 +83,8 @@ Return exactly {top_n} niches, ranked from hottest to least hot. No extra text, 
 
 
 def _parse(text: str, top_n: int) -> list[dict]:
+    text = re.sub(r'```json\s*', '', text)
+    text = re.sub(r'```\s*', '', text)
     start = text.find("[")
     end = text.rfind("]") + 1
     if start == -1 or end == 0:
