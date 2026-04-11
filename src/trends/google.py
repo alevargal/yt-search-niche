@@ -23,13 +23,13 @@ def get_trending_searches(region: str = "US") -> list[str]:
 
 
 def get_trends(keyword: str, region: str = "US") -> TrendsData:
-    pytrends = TrendReq(hl="en-US", tz=0, timeout=(10, 25))
+    pytrends = TrendReq(hl="en-US", tz=0, timeout=(15, 30), retries=3, backoff_factor=1.0)
     geo = "" if region in ("global", "") else region
 
-    interest_30d = _get_avg_interest(pytrends, keyword, geo, "today 1-m")
-    time.sleep(1)
     interest_90d, timeline = _get_interest_with_timeline(pytrends, keyword, geo, "today 3-m")
-    time.sleep(1)
+    time.sleep(2)
+    interest_30d = _calc_last_month_interest(timeline)
+    time.sleep(2)
     rising, _ = _get_related_queries(pytrends, keyword, geo)
 
     growth_30d = _calc_growth(timeline, points=4)
@@ -91,6 +91,14 @@ def _get_related_queries(pytrends, keyword, geo) -> tuple[list[RelatedQuery], li
         return rising, top
     except Exception:
         return [], []
+
+
+def _calc_last_month_interest(timeline: list[TrendPoint]) -> int:
+    """Calculate average interest for last 4 weeks from 3-month timeline."""
+    if not timeline:
+        return 0
+    last_4 = timeline[-4:]
+    return int(sum(p.value for p in last_4) / len(last_4))
 
 
 def _calc_growth(timeline: list[TrendPoint], points: int) -> float:

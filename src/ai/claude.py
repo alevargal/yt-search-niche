@@ -16,8 +16,8 @@ def analyze_niche(
     prompt = _build_prompt(niche, stats, top_videos, top_channels, trends, rss)
 
     message = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=2000,
+        model=settings.analysis_model,
+        max_tokens=4000,
         messages=[{"role": "user", "content": prompt}],
     )
     return _parse(message.content[0].text, niche)
@@ -78,7 +78,7 @@ New channels (90d): {stats.new_channels_count}
 {rss_text}
 
 === TASK ===
-Give a comprehensive, data-driven analysis. Reference real competitor names and actual view numbers.
+Give a deep, data-driven analysis. Reference REAL competitor names and ACTUAL view numbers from the data above.
 Return ONLY valid JSON:
 
 {{
@@ -94,16 +94,28 @@ Return ONLY valid JSON:
   "estimated_cpm_max": 14.0,
   "sponsor_potential": "Low|Medium|High|Very High",
   "barrier_to_entry": "Easy|Medium|Hard|Very Hard",
+  "viral_patterns": "2-3 sentences: what makes videos go viral in this niche? What titles/formats/angles get the most views? Reference actual top video titles from the data.",
+  "audience_profile": "Who exactly watches this content? Age, interests, why they watch, what problem they're solving.",
+  "top_channel_analysis": "Analyze the top 2-3 competitors: what they do well, how often they post, their weak spots, what they DON'T cover.",
   "content_angles": [
-    "Specific angle #1 with explanation — what's missing in existing content",
-    "Specific angle #2",
-    "Specific angle #3",
-    "Specific angle #4",
-    "Specific angle #5"
+    "Specific angle #1 — what's missing + exact video title example you could make",
+    "Specific angle #2 — what's missing + exact video title example",
+    "Specific angle #3 — what's missing + exact video title example",
+    "Specific angle #4 — what's missing + exact video title example",
+    "Specific angle #5 — what's missing + exact video title example"
+  ],
+  "channel_concept": "CONCRETE channel concept: exact name idea, exact niche positioning, exact content pillars (3-4 recurring series), exact upload schedule, exact video length. This should be specific enough to start tomorrow.",
+  "first_10_videos": [
+    "Exact title for video #1 you should make first",
+    "Exact title for video #2",
+    "Exact title for video #3",
+    "Exact title for video #4",
+    "Exact title for video #5"
   ],
   "why_trending_now": "{niche['why_trending_now']}",
-  "strategy": "4-5 sentences: concrete strategy referencing real competitor names, actual numbers, posting frequency, video length, positioning",
-  "recommendation": "2-3 sentences: honest verdict with specific reasoning",
+  "monetization_breakdown": "How exactly to monetize: AdSense CPM range, which sponsors are realistic, affiliate programs, merch potential, membership potential.",
+  "strategy": "5-6 sentences: concrete 90-day strategy with milestones. Reference competitor names and actual numbers. What to do week 1, month 1, month 3.",
+  "recommendation": "3-4 sentences: honest final verdict. Should they enter? What's the biggest risk? What's the biggest opportunity?",
   "worth_entering": true
 }}"""
 
@@ -112,11 +124,14 @@ def _parse(text: str, niche: dict) -> NicheAnalysis:
     start = text.find("{")
     end = text.rfind("}") + 1
     if start == -1 or end == 0:
+        print(f"  ⚠️  Claude parse error: no JSON found for '{niche.get('niche_name')}'")
         return _default(niche)
     try:
         data = json.loads(text[start:end])
         return NicheAnalysis(**data)
-    except Exception:
+    except Exception as e:
+        print(f"  ⚠️  Claude parse error for '{niche.get('niche_name')}': {e}")
+        print(f"  Raw (first 300): {text[:300]}")
         return _default(niche)
 
 
