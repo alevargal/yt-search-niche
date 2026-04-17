@@ -9,4 +9,5 @@ dist/
 build/
 .ruff_cache/
 reports/
-image/
+image/*.png.orig
+kling_*.png
