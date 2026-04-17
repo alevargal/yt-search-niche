@@ -73,6 +73,13 @@ def main():
     )
     print_report(report)
 
+    from src.storage import save_report
+    from src.web.server import start_web_server
+    saved_path = save_report(report)
+    console.print(f"\n[dim]Отчёт сохранён: {saved_path}[/dim]")
+    console.print("[dim]Открываем браузер... Ctrl+C для выхода.[/dim]\n")
+    start_web_server()
+
 
 def _analyze_niches(niches, region, progress, task) -> list:
     from src.youtube.trending import get_videos_by_keyword
